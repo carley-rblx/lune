@@ -52,7 +52,7 @@ impl LuaExportsTable for CFrame {
         };
 
         let cframe_from_axis_angle = |_: &Lua, (v, r): (LuaUserDataRef<Vector3>, f32)| {
-            Ok(CFrame(Mat4::from_axis_angle(v.0, r)))
+            Ok(CFrame(Mat4::from_axis_angle(v.0.normalize(), r)))
         };
 
         let cframe_from_euler_angles_xyz = |_: &Lua, (rx, ry, rz): (f32, f32, f32)| {

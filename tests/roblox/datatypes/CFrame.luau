@@ -153,6 +153,21 @@ assertEq(
 )
 -- stylua: ignore end
 
+-- Axis angle, where the axis need not be of length 1
+
+assertEq(
+	CFrame.fromAxisAngle(Vector3.yAxis, math.rad(90)),
+	CFrame.fromOrientation(0, math.rad(90), 0)
+)
+assertEq(
+	CFrame.fromAxisAngle(Vector3.new(0, 2, 0), math.rad(90)),
+	CFrame.fromOrientation(0, math.rad(90), 0)
+)
+assertEq(
+	CFrame.fromAxisAngle(Vector3.new(0.5, 0, 0), math.rad(45)),
+	CFrame.fromOrientation(math.rad(45), 0, 0)
+)
+
 -- TODO: More methods
 
 -- CFrames on instances
