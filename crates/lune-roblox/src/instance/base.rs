@@ -11,15 +11,15 @@ use crate::{
     datatypes::{
         attributes::{ensure_valid_attribute_name, ensure_valid_attribute_value},
         conversion::{DomValueToLua, LuaToDomValue},
-        types::{EnumItem, enum_item_to_lua},
+        types::{EnumItem, Vector3, enum_item_to_lua},
         userdata_impl_eq, userdata_impl_to_string,
     },
     shared::instance::{class_is_a, find_property_info},
 };
 
 use super::{
-    Instance, data_model, instance_to_lua, instances_to_lua, opt_instance_to_lua,
-    registry::InstanceRegistry, rekey_cache_after_transfer,
+    Instance, base_part::CFrameView, data_model, instance_to_lua, instances_to_lua,
+    opt_instance_to_lua, registry::InstanceRegistry, rekey_cache_after_transfer,
 };
 
 #[allow(clippy::too_many_lines)]
@@ -231,7 +231,8 @@ fn ensure_not_destroyed(inst: &Instance) -> LuaResult<()> {
 
     Getting a value does the following:
 
-    1. Check if it is a special property like "ClassName", "Name" or "Parent"
+    1. Check if it is a special property like "ClassName", "Name" or "Parent",
+       or a view of a BasePart's CFrame like "Position", "Orientation" or "Rotation"
     2. Check if a property exists for the wanted name
         2a. Get an existing instance property OR
         2b. Get a property from a known default value
@@ -257,6 +258,10 @@ fn instance_property_get(
 
     if prop_name.as_str() == "Name" {
         return this.get_name().into_lua(lua);
+    }
+
+    if let Some(view) = CFrameView::find(&this, &prop_name) {
+        return view.get(&this).into_lua(lua);
     }
 
     if let Some(info) = find_property_info(this.class_name, &prop_name) {
@@ -324,7 +329,8 @@ fn instance_property_get(
 
     Setting a value does the following:
 
-    1. Check if it is a special property like "ClassName", "Name" or "Parent"
+    1. Check if it is a special property like "ClassName", "Name" or "Parent",
+       or a view of a BasePart's CFrame like "Position", "Orientation" or "Rotation"
     2. Check if a property exists for the wanted name
         2a. Set a strict enum from a given EnumItem OR
         2b. Set a normal property from a given value
@@ -377,6 +383,12 @@ fn instance_property_set(
             return Ok(());
         }
         _ => {}
+    }
+
+    if let Some(view) = CFrameView::find(&this, &prop_name) {
+        let value = LuaUserDataRef::<Vector3>::from_lua(prop_value, lua)?;
+        view.set(&this, *value);
+        return Ok(());
     }
 
     if let Some(info) = find_property_info(this.class_name, &prop_name) {

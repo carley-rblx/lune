@@ -32,6 +32,8 @@ use crate::{
 #[cfg(feature = "mlua")]
 pub(crate) mod base;
 #[cfg(feature = "mlua")]
+pub(crate) mod base_part;
+#[cfg(feature = "mlua")]
 pub(crate) mod data_model;
 #[cfg(feature = "mlua")]
 pub(crate) mod terrain;
