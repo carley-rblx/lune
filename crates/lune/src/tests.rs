@@ -205,6 +205,7 @@ create_tests! {
     roblox_instance_properties: "roblox/instance/properties",
     roblox_instance_tags: "roblox/instance/tags",
 
+    roblox_instance_classes_base_part: "roblox/instance/classes/BasePart",
     roblox_instance_classes_data_model: "roblox/instance/classes/DataModel",
     roblox_instance_classes_workspace: "roblox/instance/classes/Workspace",
     roblox_instance_classes_terrain: "roblox/instance/classes/Terrain",
