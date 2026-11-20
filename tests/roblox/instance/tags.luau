@@ -30,3 +30,14 @@ assert(#model:GetTags() == 1)
 assert(#part:GetTags() == 1)
 assert(model:GetTags()[1] == TAG_NAME)
 assert(part:GetTags()[1] == TAG_NAME)
+
+-- Adding a tag the instance already has should do nothing
+
+part:AddTag(TAG_NAME)
+assert(#part:GetTags() == 1)
+
+local loaded = roblox.deserializeModel(roblox.serializeModel({ part }))[1]
+assert(#loaded:GetTags() == 1)
+
+part:RemoveTag(TAG_NAME)
+assert(part:HasTag(TAG_NAME) == false)
