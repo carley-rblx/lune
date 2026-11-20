@@ -72,3 +72,22 @@ local objectValue = Instance.new("ObjectValue")
 assert(objectValue.Value == nil)
 objectValue.Value = meshPart
 assert(objectValue.Value == meshPart)
+
+-- Vector3 and CFrame properties should keep the single precision value
+-- they were given, the same as Roblox, without rounding it to 1/65536
+
+local preciseSize = Vector3.new(0.462, 1, 1)
+local preciseCFrame = CFrame.new(0.462, 0.1, 100.462) * CFrame.Angles(0.3, 0.7, 1.1)
+
+local precise = Instance.new("Part")
+precise.Size = preciseSize
+precise.CFrame = preciseCFrame
+
+assert(precise.Size == preciseSize)
+assert(precise.CFrame.Position == preciseCFrame.Position)
+assert(precise.CFrame.XVector == preciseCFrame.XVector)
+
+local preciseLoaded = roblox.deserializeModel(roblox.serializeModel({ precise }))[1]
+assert(preciseLoaded.Size == preciseSize)
+assert(preciseLoaded.CFrame.Position == preciseCFrame.Position)
+assert(preciseLoaded.CFrame.XVector == preciseCFrame.XVector)
