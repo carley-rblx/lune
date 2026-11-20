@@ -538,7 +538,10 @@ impl Instance {
                 .get_by_ref_mut(self.dom_ref)
                 .expect("Failed to find instance in document");
             if let Some(DomValue::Tags(tags)) = inst.properties.get_mut(&ustr(PROPERTY_NAME_TAGS)) {
-                tags.push(name.as_ref());
+                let name = name.as_ref();
+                if !tags.iter().any(|tag| tag == name) {
+                    tags.push(name);
+                }
             } else {
                 inst.properties.insert(
                     ustr(PROPERTY_NAME_TAGS),
